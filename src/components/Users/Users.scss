@@ -1,0 +1,41 @@
+.wrapperForm{
+  width: 300px;
+}
+
+.user{
+  display: flex;
+  justify-content: space-between;
+  width: 500px;
+  height: 30px;
+  margin-left: 10px;
+  padding-left: 20px;
+  border: 1px solid silver;
+}
+
+.card{
+  width: 500px;
+  height: 150px;
+  margin-left: 10px;
+  margin-top: 20px;
+}
+
+.form-control{
+  margin-left: 10px;
+}
+
+.wrapperButton{
+  width: 150px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.button, .input{
+  width: 500px;
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+
+}
+
+
+
