@@ -26,35 +26,36 @@ class Users extends Component {
       .then((response) => {
         this.setState({ users: response.data, action: true })
       })
-      .catch(error => console.log(error))
   }
 
   deleteUser = async (id) => {
     await apiService.deleteUser(id)
       .then((response) => {
         if (response.status === 200) {
-         this.getUser()
+          this.getUser()
         }
+      })
+  }
+
+  changeUserEmail = async (userId, value) => {
+    await apiService.putUser(userId, value)
+      .then(() => {
+        this.getUser()
       })
   }
 
   onSubmit = async (e) => {
     const { name, email } = this.state
     e.preventDefault()
+    this.setState({ name: '', email: '' })
     await apiService.postUser({ name, email })
-      .then((res) => {
-        this.setState({ name: '', email: '' })
+      .then((response) => {
         this.setState(() => {
           return {
-            users: [...this.state.users, res.data]
+            users: [...this.state.users, response.data]
           }
         })
       })
-      .catch((err) => {
-        console.log(err)
-        this.setState({ name: '', email: '' })
-      })
-
   }
 
   render () {
@@ -97,7 +98,7 @@ class Users extends Component {
           this.state.users.map(user => {
             return (
               <div className="user" key={user.id}>
-                <User user={user} deleteUser={this.deleteUser}/>
+                <User user={user} deleteUser={this.deleteUser} changeUserEmail={this.changeUserEmail}/>
               </div>
             )
           })
