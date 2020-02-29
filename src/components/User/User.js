@@ -1,13 +1,16 @@
 import React from 'react'
 
-const User = ({ user }) => {
+const User = (props) => {
 
-  const { name } = user
+  const { name, email, id } = props.user
   return (
     <>
-      {name}
+      <div>{name}</div>
+      <div>{email}</div>
       <div className='wrapperButton'>
-        <button className='btn btn-danger btn-sm'>Delete</button>
+        <button onClick={() => {props.deleteUser(id)}}
+                className='btn btn-danger btn-sm'>Delete
+        </button>
         <button className='btn btn-warning btn-sm'>Change</button>
       </div>
     </>

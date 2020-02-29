@@ -26,6 +26,16 @@ class Users extends Component {
       .then((response) => {
         this.setState({ users: response.data, action: true })
       })
+      .catch(error => console.log(error))
+  }
+
+  deleteUser = async (id) => {
+    await apiService.deleteUser(id)
+      .then((response) => {
+        if (response.status === 200) {
+         this.getUser()
+        }
+      })
   }
 
   onSubmit = async (e) => {
@@ -34,7 +44,7 @@ class Users extends Component {
     await apiService.postUser({ name, email })
       .then((res) => {
         this.setState({ name: '', email: '' })
-        this.setState((state) => {
+        this.setState(() => {
           return {
             users: [...this.state.users, res.data]
           }
@@ -69,6 +79,7 @@ class Users extends Component {
                 <input
                   required
                   name="email"
+                  pattern="^([A-Za-z0-9_\-.])+@([A-Za-z0-9_\-.])+\.([A-Za-z]{2,4})$"
                   className="form-control"
                   value={this.state.email}
                   type="text"
@@ -77,7 +88,7 @@ class Users extends Component {
                 />
               </div>
               <div className='button'>
-                <button className='btn btn-outline-primary'>Add user</button>
+                <button className='btn btn-outline-primary btn-sm'>Add user</button>
               </div>
             </form>
           </div> : null
@@ -86,7 +97,7 @@ class Users extends Component {
           this.state.users.map(user => {
             return (
               <div className="user" key={user.id}>
-                <User user={user}/>
+                <User user={user} deleteUser={this.deleteUser}/>
               </div>
             )
           })
