@@ -17,16 +17,20 @@ const User = (props) => {
     <>
       <div className='wrapperItemUser'>
         <div className='user'
-             onClick={async () => {
-               await props.updateData(id)
-               await props.getPost(id)
-             }}>
+          onClick={async () => {
+            await props.updateData(id)
+            await props.getPost(id)
+            props.updateActionDelete(true)
+          }}>
           <span>{name}</span>
           <span>{email}</span>
         </div>
         <div className='wrapperButton'>
-          <button onClick={async () => { await props.deleteUser(id) }}
-                  className='btn btn-danger btn-sm'>Delete
+          <button onClick={async () => {
+            await props.deleteUser(id)
+            props.updateActionDelete(false)
+          }}
+            className='btn btn-danger btn-sm'>Delete
           </button>
           <button
             onClick={isAction}
@@ -35,12 +39,12 @@ const User = (props) => {
           {action
             ? <div>
               <form className='form'
-                    onSubmit={async (e) => {
-                      e.preventDefault()
-                      await props.changeUserEmail(props.user.id, emailInput)
-                      setAction(false)
-                      setEmailInp('')
-                    }}>
+                onSubmit={async (e) => {
+                  e.preventDefault()
+                  await props.changeUserEmail(props.user.id, emailInput)
+                  setAction(false)
+                  setEmailInp('')
+                }}>
                 <input
                   name='email'
                   className='form-control'
@@ -48,7 +52,7 @@ const User = (props) => {
                   value={emailInput}
                   onChange={handleInput}
                   type='text'
-                  placeholder='enter new email'/>
+                  placeholder='enter new email' />
                 <button className='btn btn-primary btn-sm'>Ok</button>
               </form>
             </div>

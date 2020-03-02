@@ -20,20 +20,20 @@ const Post = (props) => {
         </div>
         <div className='wrapperButton'>
           <button className='btn btn-danger btn-sm'
-                  onClick={async () => { await props.deletePost(props.id) }}>Delete
+            onClick={async () => { await props.deletePost(props.id) }}>Delete
           </button>
           <button className='btn btn-warning btn-sm'
-                  onClick={isAction}>Change
+            onClick={isAction}>Change
           </button>
           {action
             ? <div>
               <form className='form'
-                    onSubmit={async (e) => {
-                      e.preventDefault()
-                      await props.changePost(props.id, title)
-                      setAction(false)
-                      setTitle('')
-                    }}>
+                onSubmit={async (e) => {
+                  e.preventDefault()
+                  await props.changePost(props.id, title)
+                  setAction(false)
+                  setTitle('')
+                }}>
                 <input
                   required
                   className='form-control'

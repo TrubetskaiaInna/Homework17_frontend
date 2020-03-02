@@ -14,12 +14,18 @@ class Users extends Component {
       email: '',
       title: '',
       currentUserId: '',
-      actionInputUser: false
+      actionInputUser: false,
+      actionInputPost: false,
+      actionDelete: true
     }
   }
 
   updateData = (value) => {
     this.setState({ currentUserId: value })
+  }
+
+  updateActionDelete = (value) => {
+    this.setState({ actionDelete: value })
   }
 
   handleInput = ({ target: { name, value } }) => {
@@ -32,7 +38,10 @@ class Users extends Component {
   getUser = async () => {
     await apiService.getUser()
       .then((response) => {
-        this.setState({ users: response.data, actionInputUser: true })
+        this.setState({
+          users: response.data,
+          actionInputUser: true
+        })
       })
   }
 
@@ -53,14 +62,14 @@ class Users extends Component {
   }
 
   addUser = async (e) => {
-    const { name, email } = this.state
+    const { name, email, users } = this.state
     e.preventDefault()
     this.setState({ name: '', email: '' })
     await apiService.postUser({ name, email })
       .then(async (response) => {
         this.setState(() => {
           return {
-            users: [...this.state.users, response.data]
+            users: [...users, response.data]
           }
         })
       })
@@ -69,35 +78,40 @@ class Users extends Component {
   getPost = async (id) => {
     await apiService.getPost(id)
       .then((response) => {
-        this.setState({ posts: response.data, actionInputPost: true })
+        this.setState({
+          posts: response.data,
+          actionInputPost: true
+        })
       })
   }
 
   deletePost = async (id) => {
+    const { currentUserId } = this.state
     await apiService.deletePost(id)
       .then(async (response) => {
         if (response.status === 200) {
-          await this.getPost(this.state.currentUserId)
+          await this.getPost(currentUserId)
         }
       })
   }
 
   changePost = async (postId, value) => {
+    const { currentUserId } = this.state
     await apiService.putPost(postId, value)
       .then(async () => {
-        await this.getPost(this.state.currentUserId)
+        await this.getPost(currentUserId)
       })
   }
 
   addPost = async (e) => {
-    const { title } = this.state
+    const { title, currentUserId, posts } = this.state
     e.preventDefault()
     this.setState({ title: '' })
-    await apiService.postPost(this.state.currentUserId, { title })
+    await apiService.postPost(currentUserId, { title })
       .then(async (response) => {
         this.setState(() => {
           return {
-            posts: [...this.state.posts, response.data]
+            posts: [...posts, response.data]
           }
         })
       })
@@ -151,13 +165,14 @@ class Users extends Component {
                         deleteUser={this.deleteUser}
                         changeUserEmail={this.changeUserEmail}
                         updateData={this.updateData}
-                        getPost={this.getPost}/>
+                        getPost={this.getPost}
+                        updateActionDelete={this.updateActionDelete}/>
                 )
               })
             }
           </div>
-          <div className='wrapperPost'>
-            {this.state.actionInputPost ?
+          {(this.state.actionInputPost && this.state.actionDelete) ?
+            <div className='wrapperPost'>
               <div className='card'>
                 <div className='card-body'>
                   <form onSubmit={this.addPost}>
@@ -177,21 +192,20 @@ class Users extends Component {
                     </div>
                   </form>
                 </div>
-              </div> : null
-            }
-            {
-              this.state.posts.map(post => {
-                return (
-                  <Post key={post.id}
-                        title={post.title}
-                        id={post.id}
-                        deletePost={this.deletePost}
-                        changePost={this.changePost}
-                  />
-                )
-              })
-            }
-          </div>
+              </div>
+              {
+                this.state.posts.map(post => {
+                  return (
+                    <Post key={post.id}
+                          title={post.title}
+                          id={post.id}
+                          deletePost={this.deletePost}
+                          changePost={this.changePost}
+                    />
+                  )
+                })
+              }
+            </div> : null}
         </div>
       </>
     )
