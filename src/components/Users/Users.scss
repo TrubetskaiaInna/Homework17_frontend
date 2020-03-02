@@ -1,50 +1,65 @@
-.wrapperForm{
-  width: 300px;
-}
-
-.user{
-  display: flex;
-  justify-content: space-between;
-  width: 500px;
-  height: 30px;
-  margin-left: 10px;
-  padding-left: 20px;
-  border: 1px solid silver;
-}
-
-.card{
-  width: 500px;
-  height: 150px;
-  margin-left: 10px;
-  margin-top: 20px;
-}
-
-.form-control{
-  margin-left: 10px;
-}
-
-.wrapperButton{
-  width: 150px;
+.wrapper {
   display: flex;
   justify-content: space-between;
 }
 
-.button, .input{
-  width: 500px;
+.wrapperUser, .wrapperPost {
+  width: 49%;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.wrapperItemUser, .wrapperItemPost {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
+}
+
+.button {
+  margin-left: 50px;
   margin-top: 10px;
 
 }
 
-.form{
-  position: absolute;
-  margin-left: 150px;
+.wrapperButtonForm{
+  display: flex;
+  justify-content: center;
+  margin-top: 8px;
 }
 
-input{
-  outline: none;
+.wrapperForm {
+  width: 300px;
 }
 
+.user, .post {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  width: 80%;
+  border-bottom: 1px solid silver;
+}
+
+.post {
+  justify-content: flex-start;
+}
+
+.card {
+  margin-top: 20px;
+}
+
+.wrapperButton {
+  display: flex;
+  justify-content: flex-end;
+  margin-left: 20px;
+}
+
+.form {
+  display: flex;
+  justify-content: space-between;
+  width: 300px;
+}
+
+ input{
+   outline: none;
+ }
 
 

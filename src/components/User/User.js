@@ -9,40 +9,51 @@ const User = (props) => {
     setEmailInp(e.target.value)
   }
 
-  const putUser = () => {
+  const isAction = () => {
     setAction(true)
   }
 
   return (
     <>
-      <span>{name}</span>
-      <span>{email}</span>
-
-      <div className='wrapperButton'>
-        <button onClick={async () => {await props.deleteUser(id)}}
-                className='btn btn-danger btn-sm'>Delete
-        </button>
-        <button
-          onClick={putUser}
-          className='btn btn-warning btn-sm'>Change
-        </button>
-        {action ?
-          <form className='form' onSubmit={async (e) =>{
-            e.preventDefault()
-            await props.changeUserEmail(props.user.id, emailInput)
-            setAction(false)
-            setEmailInp('')
-          }}>
-            <input
-              name="email"
-              pattern="^([A-Za-z0-9_\-.])+@([A-Za-z0-9_\-.])+\.([A-Za-z]{2,4})$"
-              value={emailInput}
-              onChange={handleInput}
-              type='text'
-              placeholder='enter new email'/>
-            <button className='btn btn-primary btn-sm'>Ok</button>
-          </form>
-          : null}
+      <div className='wrapperItemUser'>
+        <div className='user'
+             onClick={async () => {
+               await props.updateData(id)
+               await props.getPost(id)
+             }}>
+          <span>{name}</span>
+          <span>{email}</span>
+        </div>
+        <div className='wrapperButton'>
+          <button onClick={async () => { await props.deleteUser(id) }}
+                  className='btn btn-danger btn-sm'>Delete
+          </button>
+          <button
+            onClick={isAction}
+            className='btn btn-warning btn-sm'>Change
+          </button>
+          {action
+            ? <div>
+              <form className='form'
+                    onSubmit={async (e) => {
+                      e.preventDefault()
+                      await props.changeUserEmail(props.user.id, emailInput)
+                      setAction(false)
+                      setEmailInp('')
+                    }}>
+                <input
+                  name='email'
+                  className='form-control'
+                  pattern='^([A-Za-z0-9_\-.])+@([A-Za-z0-9_\-.])+\.([A-Za-z]{2,4})$'
+                  value={emailInput}
+                  onChange={handleInput}
+                  type='text'
+                  placeholder='enter new email'/>
+                <button className='btn btn-primary btn-sm'>Ok</button>
+              </form>
+            </div>
+            : null}
+        </div>
       </div>
     </>
   )

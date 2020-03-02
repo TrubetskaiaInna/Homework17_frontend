@@ -1,12 +1,12 @@
-import React from 'react';
+import React from 'react'
 import Users from './components/Users/Users'
 
-function App() {
+function App () {
   return (
     <div>
-     <Users/>
+      <Users />
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
