@@ -1,215 +1,197 @@
-import React, { Component } from 'react'
+import React, { useState, useReducer } from 'react'
 import { apiService } from '../../service/apiService'
 import User from '../User/User'
 import './Users.scss'
 import Post from '../Post/Post'
 
-class Users extends Component {
-  constructor () {
-    super()
-    this.state = {
-      users: [],
-      posts: [],
+const Users = () => {
+  const [users, setUsers] = useState([])
+  const [posts, setPosts] = useState([])
+  const [input, setInput] = useReducer(
+    (state, newState) => ({ ...state, ...newState }),
+    {
       name: '',
       email: '',
-      title: '',
-      currentUserId: '',
-      actionInputUser: false,
-      actionInputPost: false,
-      actionDelete: true
+      title: ''
     }
+  )
+  const [currentUserId, setCurrentUserId] = useState('')
+  const [actionInputUser, setActionInputUser] = useState(false)
+  const [actionInputPost, setActionInputPost] = useState(false)
+  const [actionDelete, setActionDelete] = useState(true)
+
+  const updateData = (value) => {
+    setCurrentUserId(value)
   }
 
-  updateData = (value) => {
-    this.setState({ currentUserId: value })
+  const updateActionDelete = (value) => {
+    setActionDelete(value)
   }
 
-  updateActionDelete = (value) => {
-    this.setState({ actionDelete: value })
+  const handleInput = e => {
+    const name = e.target.name
+    const newValue = e.target.value
+    setInput({ [name]: newValue })
   }
 
-  handleInput = ({ target: { name, value } }) => {
-    this.setState(
-      {
-        [name]: value
-      })
-  }
-
-  getUser = async () => {
+  const getUser = async () => {
     await apiService.getUser()
       .then((response) => {
-        this.setState({
-          users: response.data,
-          actionInputUser: true
-        })
+        setUsers(response.data)
+        setActionInputUser(true)
       })
   }
 
-  deleteUser = async (id) => {
+  const deleteUser = async (id) => {
     await apiService.deleteUser(id)
       .then(async (response) => {
         if (response.status === 200) {
-          await this.getUser()
+          await getUser()
         }
       })
   }
 
-  changeUserEmail = async (userId, value) => {
+  const changeUserEmail = async (userId, value) => {
     await apiService.putUser(userId, value)
       .then(async () => {
-        await this.getUser()
+        await getUser()
       })
   }
 
-  addUser = async (e) => {
-    const { name, email, users } = this.state
+  const addUser = async (e) => {
     e.preventDefault()
-    this.setState({ name: '', email: '' })
-    await apiService.postUser({ name, email })
+    await apiService.postUser({ name: input.name, email: input.email })
       .then(async (response) => {
-        this.setState(() => {
-          return {
-            users: [...users, response.data]
-          }
-        })
+        setUsers([...users, response.data])
       })
+    setInput({ name: '' })
+    setInput({ email: '' })
   }
 
-  getPost = async (id) => {
+  const getPost = async (id) => {
     await apiService.getPost(id)
       .then((response) => {
-        this.setState({
-          posts: response.data,
-          actionInputPost: true
-        })
+        setPosts(response.data)
+        setActionInputPost(true)
       })
   }
 
-  deletePost = async (id) => {
-    const { currentUserId } = this.state
+  const deletePost = async (id) => {
     await apiService.deletePost(id)
       .then(async (response) => {
         if (response.status === 200) {
-          await this.getPost(currentUserId)
+          await getPost(currentUserId)
         }
       })
   }
 
-  changePost = async (postId, value) => {
-    const { currentUserId } = this.state
+  const changePost = async (postId, value) => {
     await apiService.putPost(postId, value)
       .then(async () => {
-        await this.getPost(currentUserId)
+        await getPost(currentUserId)
       })
   }
 
-  addPost = async (e) => {
-    const { title, currentUserId, posts } = this.state
+  const addPost = async (e) => {
     e.preventDefault()
-    this.setState({ title: '' })
-    await apiService.postPost(currentUserId, { title })
+    setInput({ title: '' })
+    await apiService.postPost(currentUserId, { title: input.title })
       .then(async (response) => {
-        this.setState(() => {
-          return {
-            posts: [...posts, response.data]
-          }
-        })
+        setPosts([...posts, response.data])
       })
   }
 
-  render () {
-    return (
-      <>
-        <div className='button'>
-          <button className='btn btn-outline-primary' onClick={this.getUser}>Get Users</button>
+  return (
+    <>
+      <div className='button'>
+        <button className='btn btn-outline-primary' onClick={getUser}>Get Users</button>
+      </div>
+      <div className='wrapper'>
+        <div className='wrapperUser'>
+          {actionInputUser
+            ? <div className='card'>
+              <div className='card-body'>
+                <form onSubmit={addUser}>
+                  <div className='input'>
+                    <input
+                      required
+                      name='name'
+                      className='form-control'
+                      value={input.name}
+                      type='text'
+                      onChange={handleInput}
+                      placeholder='Enter name'
+                    />
+                    <input
+                      required
+                      name='email'
+                      pattern='^([A-Za-z0-9_\-.])+@([A-Za-z0-9_\-.])+\.([A-Za-z]{2,4})$'
+                      className='form-control'
+                      value={input.email}
+                      type='text'
+                      onChange={handleInput}
+                      placeholder='Enter email'
+                    />
+                  </div>
+                  <div className='wrapperButtonForm'>
+                    <button className='btn btn-outline-primary btn-sm'>Add user</button>
+                  </div>
+                </form>
+              </div>
+            </div> : null
+          }
+          {
+            users.map(user => {
+              return (
+                <User user={user}
+                  key={user.id}
+                  deleteUser={deleteUser}
+                  changeUserEmail={changeUserEmail}
+                  updateData={updateData}
+                  getPost={getPost}
+                  updateActionDelete={updateActionDelete} />
+              )
+            })
+          }
         </div>
-        <div className='wrapper'>
-          <div className='wrapperUser'>
-            {this.state.actionInputUser ?
-              <div className="card">
-                <div className='card-body'>
-                  <form onSubmit={this.addUser}>
-                    <div className='input'>
-                      <input
-                        required
-                        name="name"
-                        className="form-control"
-                        value={this.state.name}
-                        type="text"
-                        onChange={this.handleInput}
-                        placeholder="Enter name"
-                      />
-                      <input
-                        required
-                        name="email"
-                        pattern="^([A-Za-z0-9_\-.])+@([A-Za-z0-9_\-.])+\.([A-Za-z]{2,4})$"
-                        className="form-control"
-                        value={this.state.email}
-                        type="text"
-                        onChange={this.handleInput}
-                        placeholder="Enter email"
-                      />
-                    </div>
-                    <div className='wrapperButtonForm'>
-                      <button className='btn btn-outline-primary btn-sm'>Add user</button>
-                    </div>
-                  </form>
-                </div>
-              </div> : null
-            }
+        {(actionInputPost && actionDelete)
+          ? <div className='wrapperPost'>
+            <div className='card'>
+              <div className='card-body'>
+                <form onSubmit={addPost}>
+                  <div className='input'>
+                    <input
+                      required
+                      name='title'
+                      className='form-control'
+                      value={input.title}
+                      type='text'
+                      onChange={handleInput}
+                      placeholder='Enter post'
+                    />
+                  </div>
+                  <div className='wrapperButtonForm'>
+                    <button className='btn btn-outline-primary btn-sm'>Add post</button>
+                  </div>
+                </form>
+              </div>
+            </div>
             {
-              this.state.users.map(user => {
+              posts.map(post => {
                 return (
-                  <User user={user}
-                        key={user.id}
-                        deleteUser={this.deleteUser}
-                        changeUserEmail={this.changeUserEmail}
-                        updateData={this.updateData}
-                        getPost={this.getPost}
-                        updateActionDelete={this.updateActionDelete}/>
+                  <Post key={post.id}
+                    title={post.title}
+                    id={post.id}
+                    deletePost={deletePost}
+                    changePost={changePost}
+                  />
                 )
               })
             }
-          </div>
-          {(this.state.actionInputPost && this.state.actionDelete) ?
-            <div className='wrapperPost'>
-              <div className='card'>
-                <div className='card-body'>
-                  <form onSubmit={this.addPost}>
-                    <div className='input'>
-                      <input
-                        required
-                        name="title"
-                        className="form-control"
-                        value={this.state.title}
-                        type="text"
-                        onChange={this.handleInput}
-                        placeholder="Enter post"
-                      />
-                    </div>
-                    <div className='wrapperButtonForm'>
-                      <button className='btn btn-outline-primary btn-sm'>Add post</button>
-                    </div>
-                  </form>
-                </div>
-              </div>
-              {
-                this.state.posts.map(post => {
-                  return (
-                    <Post key={post.id}
-                          title={post.title}
-                          id={post.id}
-                          deletePost={this.deletePost}
-                          changePost={this.changePost}
-                    />
-                  )
-                })
-              }
-            </div> : null}
-        </div>
-      </>
-    )
-  }
+          </div> : null}
+      </div>
+    </>
+  )
 }
 
 export default Users
